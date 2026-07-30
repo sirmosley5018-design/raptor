@@ -85,7 +85,12 @@ class HarmonicOscillator:
 
     def canonical(self, beta: float) -> Dict:
         x = beta * self.hbar * self.omega / 2.0
-        Phi = self.N * math.log(2 * math.sinh(x))
+        # log(2 sinh x): direct form is accurate for small x; for large x use the
+        # log-space identity log(2 sinh x) = x + log(1 - e^{-2x}) to avoid sinh overflow.
+        if x < 20:
+            Phi = self.N * math.log(2 * math.sinh(x))
+        else:
+            Phi = self.N * (x + math.log1p(-math.exp(-2 * x)))
         E = self.N * self.hbar * self.omega / 2.0 * (1.0 / math.tanh(x))
         S = Phi + beta * E
         T = 1.0 / beta
