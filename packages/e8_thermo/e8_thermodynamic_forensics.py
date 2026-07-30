@@ -23,7 +23,7 @@ class TwoLevelSystem:
         logZ = self.N * math.log1p(x)  # log(1+x) to avoid overflow
         Phi = -logZ
         E = self.N * self.epsilon * x / (1 + x)
-        S = Phi + beta * E
+        S = beta * E - Phi  # S = beta*E + logZ  (Phi = -logZ)
         T = 1.0 / beta if beta > 0 else float('inf')
         Z = math.exp(logZ) if logZ < 700 else float('inf')
         return {'Z': Z, 'Phi': Phi, 'E': E, 'S': S, 'T': T, 'beta': beta}
@@ -56,7 +56,7 @@ class IdealGas3D:
         logZ = self.N * math.log(self.V / lambda_T**3) - math.log(math.factorial(self.N))
         Phi = -logZ
         E = 1.5 * self.N / beta
-        S = Phi + beta * E
+        S = beta * E - Phi  # S = beta*E + logZ  (Phi = -logZ)
         T = 1.0 / beta
         Z = math.exp(logZ) if logZ < 700 else float('inf')
         return {'Z': Z, 'Phi': Phi, 'E': E, 'S': S, 'T': T, 'beta': beta}
@@ -92,7 +92,7 @@ class HarmonicOscillator:
         else:
             Phi = self.N * (x + math.log1p(-math.exp(-2 * x)))
         E = self.N * self.hbar * self.omega / 2.0 * (1.0 / math.tanh(x))
-        S = Phi + beta * E
+        S = beta * E - Phi  # S = beta*E + logZ  (Phi = -logZ)
         T = 1.0 / beta
         Z = math.exp(-Phi) if -Phi < 700 else float('inf')  # exp(-Phi), guarded against overflow
         return {'Z': Z, 'Phi': Phi, 'E': E, 'S': S, 'T': T, 'beta': beta}
